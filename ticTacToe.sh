@@ -1,4 +1,4 @@
-##!/bin/bash -x
+#!/bin/bash -x
 echo "Welcome to TicTacToe Program"
 
 declare -A board
@@ -19,15 +19,31 @@ function resettingBoard()
 
 resettingBoard
 
+function letterAssignment()
+{
+	randomLetter=$((RANDOM%2))
+	if [[ $randomLetter -eq 0 ]]
+	then
+		player="O"
+	else
+		player="X"
+	fi
+	echo $player
+}
+letterAssignment
+
+
 function tossToPlayFirst()
 {
 	randomToss=$((RANDOM%2))
 	if [[ $randomToss -eq 0 ]]
 	then
-		echo "Player1 wins the toss"
+		echo "player1 win the toss"
+		player1=$(letterAssignment)
 	else
-		echo "player2 wins the toss"
+		echo "player2 win the toss"
+		player2=$(letterAssignment)
 	fi
 }
-
 tossToPlayFirst
+
