@@ -134,6 +134,32 @@ function playingGame()
 	fi
 }
 
+function checkCorners()
+{
+	if [[ $block == 0 ]]
+	then
+		for (( a=1; a<=$row; $((a+=2)) ))
+		do
+			for (( b=1; b<=$column; $((b+=2)) ))
+			do
+				if [[ ${board[$a,$b]} == "-" ]]
+				then
+					board[$a,$b]=$currentPlayer
+					seeBoard
+					win=0
+					((count++))
+					block=1
+					break
+				fi
+			done
+			if [[ $block == 1 ]]
+			then
+				break
+			fi
+		done
+	fi
+}
+
 #checkwin before playing game
 function computerPlayToWin()
 {
@@ -187,6 +213,7 @@ do
 		nextPlayer="X"
 		computerPlayToWin $currentPlayer
 		computerPlayToWin $nextPlayer
+		checkCorners $currentPlayer
 		if [[ $block == 0 ]]
 		then
 			rowPosition=$((RANDOM % 3 + 1))
