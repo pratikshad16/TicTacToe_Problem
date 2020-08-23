@@ -1,4 +1,4 @@
-#!/bin/bash -x
+##!/bin/bash -x
 echo "Welcome to TicTacToe Program"
 
 declare -A board
@@ -47,3 +47,17 @@ function tossToPlayFirst()
 }
 tossToPlayFirst
 
+function seeBoard()
+{
+	echo -e "----------------"
+	for (( i=1; i<=row; i++ ))
+	do
+		for (( j=1; j<=column+1; j++ ))
+		do
+			echo -e "|| ${board[$i,$j]} \c"
+		done
+   echo -e "\n----------------"
+	done
+}
+
+seeBoard
