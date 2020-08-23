@@ -37,10 +37,8 @@ function tossToPlayFirst()
 	randomToss=$((RANDOM%2))
 	if [[ $randomToss -eq 0 ]]
 	then
-		echo "player1 win the toss"
 		currentPlayer=$(letterAssignment)
 	else
-		echo "player2 win the toss"
 		currentPlayer=$(letterAssignment)
 	fi
 }
@@ -109,11 +107,11 @@ function checkWin()
 		done
 	if [[ $match1 == 3 || $match2 == 3 || $match3 == 3 || $match4 == 3 ]]
 	then
-		echo "!!! $1 wins !!!"
+		echo "Heyyyy!!! $1 wins"
 		exit
 	elif [[ $count == 9 ]]
 	then
-		echo "!!! Tie !!!"
+		echo "Oh Oh it is a Tie "
 	fi
 	done
 	count=$((count+1))
@@ -145,8 +143,8 @@ do
 		read -p "Enter column position: " columnPosition
 		playingGame $rowPosition $columnPosition
 	else
-		read -p "Enter row position: " rowPosition
-		read -p "Enter column position: " columnPosition
+		rowPosition=$((RANDOM % 3 + 1))
+		columnPosition=$((RANDOM % 3 + 1))
 		playingGame $rowPosition $columnPosition
 	fi
 done
