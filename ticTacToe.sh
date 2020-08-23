@@ -71,6 +71,7 @@ function checkWin()
 {
 	match3=0
 	match4=0
+	win=0
 	for (( i=1; i<=3; i++ ))
 	do
 		match1=0
@@ -107,11 +108,7 @@ function checkWin()
 		done
 	if [[ $match1 == 3 || $match2 == 3 || $match3 == 3 || $match4 == 3 ]]
 	then
-		echo "Heyyyy!!! $1 wins"
-		exit
-	elif [[ $count == 9 ]]
-	then
-		echo "Oh Oh it is a Tie "
+		win=1
 	fi
 	done
 	count=$((count+1))
@@ -126,10 +123,35 @@ function playingGame()
 		board[$row1,$column1]=$currentPlayer
 		seeBoard
 		checkWin $currentPlayer
-		changePlayer $currentPlayer
+		if [[ $win == 1 ]]
+		then
+			echo "$currentPlayer wins"
+			exit
+		fi
+			changePlayer $currentPlayer
 	else
 		echo "No place"
 	fi
+}
+
+#checkwin before playing game
+function computerPlayToWin()
+{
+	for (( m=1; m<=row; m++ ))
+	do
+		for (( n=1; n<=column; n++ ))
+		do
+			if [[ ${boardd[$m,$n]} == "-" ]]
+			then
+				board[$m,$n]=$currentPlayer
+				checkWin $currentPlayer
+				if [[ $win == 0 ]]
+				then
+					board[$m,$n]="-"
+				fi
+			fi
+		done
+	done
 }
 
 resettingBoard
@@ -143,8 +165,14 @@ do
 		read -p "Enter column position: " columnPosition
 		playingGame $rowPosition $columnPosition
 	else
+		echo -e "\nComputer turn :\n"
+		computerPlayToWin
 		rowPosition=$((RANDOM % 3 + 1))
 		columnPosition=$((RANDOM % 3 + 1))
 		playingGame $rowPosition $columnPosition
 	fi
 done
+if [[ $win == 0 ]]
+then
+	echo "oh oh It is a tie game"
+fi
