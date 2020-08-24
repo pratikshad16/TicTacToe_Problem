@@ -5,21 +5,23 @@ declare -A board
 #constants
 ROW=3
 COLUMN=3
+TOTAL_MOVES=9
 
 count=1
 
+#function for resetting the board
 function resettingBoard()
 {
-	for (( i=1; i<=$ROW; i++ ))
+	for (( row=1; row<=$ROW; row++ ))
 	do
-		for (( j=1; j<=$COLUMN; j++ ))
+		for (( column=1; column<=$COLUMN; column++ ))
 		do
-			board[$i,$j]="-"
+			board[$row,$column]="-"
 		done
 	done
 }
 
-
+#function for assigning the letter
 function letterAssignment()
 {
 	randomLetter=$((RANDOM%2))
@@ -32,8 +34,8 @@ function letterAssignment()
 	echo $player
 }
 
-
-function tossToPlayFirst()
+#function for toss
+function toss()
 {
 	randomToss=$((RANDOM%2))
 	if [[ $randomToss -eq 0 ]]
@@ -44,21 +46,21 @@ function tossToPlayFirst()
 	fi
 }
 
-
-function seeBoard()
+#function for displaying board
+function displayBoard()
 {
 	echo -e "----------------"
-	for (( i=1; i<=ROW; i++ ))
+	for (( row=1; row<=ROW; row++ ))
 	do
-		for (( j=1; j<=COLUMN+1; j++ ))
+		for (( column=1; column<=COLUMN+1; column++ ))
 		do
-			echo -e "|| ${board[$i,$j]} \c"
+			echo -e "|| ${board[$row,$column]} \c"
 		done
    echo -e "\n----------------"
 	done
 }
 
-
+#function for changing player
 function changePlayer()
 {
 	if [[ $1 == "X" ]]
@@ -68,21 +70,23 @@ function changePlayer()
 		currentPlayer="X"
 	fi
 }
+
+#function for checkking winning conditions
 function checkWin()
 {
-	match3=0
-	match4=0
+	diagonalOneCondition=0
+	diagonalTwoCondition=0
 	win=0
 	for (( i=1; i<=3; i++ ))
 	do
-		match1=0
-		match2=0
+		rowCondition=0
+		columnCondition=0
 		#row check
 		for (( j=1; j<=3; j++ ))
 		do
 			if [[ ${board[$i,$j]} == $1 ]]
 			then
-				match1=$((match1+1))
+				rowCondition=$((rowCondition+1))
 			fi
 		done
 		#column check
@@ -90,13 +94,13 @@ function checkWin()
 		do
 			if [[ ${board[$k,$i]} == $1 ]]
 			then
-				match2=$((match2+1))
+				columnCondition=$((columnCondition+1))
 			fi
 		done
 		#diagonal one
 		if [[ ${board[$i,$i]} == $1 ]]
 		then
-			match3=$((match3+1))
+			diagonalOneCondition=$((diagonalOneCondition+1))
 		fi
 		#diagonaltwo
 		for (( y=1; y<=3; y++ ))
@@ -104,24 +108,25 @@ function checkWin()
 			add=$((i+y))
 			if [[ $add == 4 && ${board[$i,$y]} == $1 ]]
 			then
-				match4=$((match4+1))
+				diagonalTwoCondition=$((diagonalTwoCondition+1))
 			fi
 		done
-	if [[ $match1 == 3 || $match2 == 3 || $match3 == 3 || $match4 == 3 ]]
+	if [[ $rowCondition == 3 || $columnCondition == 3 || $diagonalOneCondition == 3 || $diagonalTwoCondition == 3 ]]
 	then
 		win=1
 	fi
 	done
 }
 
+#function for playing the game
 function playingGame()
 {
-	row1=$1
-	column1=$2
-	if [[ ${board[$row1,$column1]} == "-" ]]
+	row=$1
+	column=$2
+	if [[ ${board[$row,$column]} == "-" ]]
 	then
-		board[$row1,$column1]=$currentPlayer
-		seeBoard
+		board[$row,$column]=$currentPlayer
+		displayBoard
 		checkWin $currentPlayer
 		((count++))
 		if [[ $win == 1 ]]
@@ -135,18 +140,19 @@ function playingGame()
 	fi
 }
 
+#function to check availability of corners
 function checkCorners()
 {
 	if [[ $block == 0 ]]
 	then
-		for (( a=1; a<=$ROW; $((a+=2)) ))
+		for (( row=1; row<=$ROW; $((row+=2)) ))
 		do
-			for (( b=1; b<=$COLUMN; $((b+=2)) ))
+			for (( column=1; column<=$COLUMN; $((column+=2)) ))
 			do
-				if [[ ${board[$a,$b]} == "-" ]]
+				if [[ ${board[$row,$column]} == "-" ]]
 				then
-					board[$a,$b]=$currentPlayer
-					seeBoard
+					board[$row,$column]=$currentPlayer
+					displayBoard
 					win=0
 					((count++))
 					block=1
@@ -169,7 +175,7 @@ function checkCenter()
 		if [[ ${board[$2,$3]} == "-" ]]
 		then
 			board[$2,$3]=$1
-			seeBoard
+			displayBoard
 			win=0
 			((count++))
 			block=1
@@ -193,7 +199,7 @@ function checkSides()
 					if [[ ${board[$row,$column]} == "-" ]]
 					then
 						board[$row,$column]=$1
-						seeBoard
+						displayBoard
 						win=0
 						((count++))
 						block=1
@@ -207,26 +213,26 @@ function checkSides()
 function computerPlayToWin()
 {
 	block=0
-	for (( m=1; m<=$ROW; m++ ))
+	for (( row=1; row<=$ROW; row++ ))
 	do
-		for (( n=1; n<=$COLUMN; n++ ))
+		for (( column=1; column<=$COLUMN; column++ ))
 		do
-			if [[ ${board[$m,$n]} == "-" ]]
+			if [[ ${board[$row,$column]} == "-" ]]
 			then
-				board[$m,$n]=$1
+				board[$row,$column]=$1
 				checkWin $1
 				if [[ $win == 0 ]]
 				then
-					board[$m,$n]="-"
-				elif [[ $win == 1 && ${board[$m,$n]} == $currentPlayer ]]
+					board[$row,$column]="-"
+				elif [[ $win == 1 && ${board[$row,$column]} == $currentPlayer ]]
 				then
-					seeBoard
+					displayBoard
 					echo "!!! $currentPlayer wins !!!"
 					exit
 				elif [[ $win == 1 ]]
 				then
-					board[$m,$n]=$currentPlayer
-					seeBoard
+					board[$row,$column]=$currentPlayer
+					displayBoard
 					win=0
 					block=1
 					count=$((count+1))
@@ -242,9 +248,9 @@ function computerPlayToWin()
 }
 
 resettingBoard
-tossToPlayFirst
-seeBoard
-while [[ $count -le 9 ]]
+toss
+displayBoard
+while [[ $count -le TOTAL_MOVES ]]
 do
 	if [[ $currentPlayer == "X" ]]
 	then
