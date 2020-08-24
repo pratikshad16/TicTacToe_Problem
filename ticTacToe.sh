@@ -2,16 +2,17 @@
 echo "Welcome to TicTacToe Program"
 
 declare -A board
-#variables
-row=3
-column=3
+#constants
+ROW=3
+COLUMN=3
+
 count=1
 
 function resettingBoard()
 {
-	for (( i=1; i<=$row; i++ ))
+	for (( i=1; i<=$ROW; i++ ))
 	do
-		for (( j=1; j<=$column; j++ ))
+		for (( j=1; j<=$COLUMN; j++ ))
 		do
 			board[$i,$j]="-"
 		done
@@ -47,9 +48,9 @@ function tossToPlayFirst()
 function seeBoard()
 {
 	echo -e "----------------"
-	for (( i=1; i<=row; i++ ))
+	for (( i=1; i<=ROW; i++ ))
 	do
-		for (( j=1; j<=column+1; j++ ))
+		for (( j=1; j<=COLUMN+1; j++ ))
 		do
 			echo -e "|| ${board[$i,$j]} \c"
 		done
@@ -138,9 +139,9 @@ function checkCorners()
 {
 	if [[ $block == 0 ]]
 	then
-		for (( a=1; a<=$row; $((a+=2)) ))
+		for (( a=1; a<=$ROW; $((a+=2)) ))
 		do
-			for (( b=1; b<=$column; $((b+=2)) ))
+			for (( b=1; b<=$COLUMN; $((b+=2)) ))
 			do
 				if [[ ${board[$a,$b]} == "-" ]]
 				then
@@ -160,13 +161,29 @@ function checkCorners()
 	fi
 }
 
+#when corners are not available then select center
+function checkCenter()
+{
+	if [[ $block == 0 ]]
+	then
+		if [[ ${board[$2,$3]} == "-" ]]
+		then
+			board[$2,$3]=$1
+			seeBoard
+			win=0
+			((count++))
+			block=1
+		fi
+	fi
+}
+
 #checkwin before playing game
 function computerPlayToWin()
 {
 	block=0
-	for (( m=1; m<=$row; m++ ))
+	for (( m=1; m<=$ROW; m++ ))
 	do
-		for (( n=1; n<=$column; n++ ))
+		for (( n=1; n<=$COLUMN; n++ ))
 		do
 			if [[ ${board[$m,$n]} == "-" ]]
 			then
@@ -214,6 +231,9 @@ do
 		computerPlayToWin $currentPlayer
 		computerPlayToWin $nextPlayer
 		checkCorners $currentPlayer
+		row=$((ROW/2+1))
+		column=$((COLUMN/2+1))
+		checkCenter $currentPlayer $row $column
 		if [[ $block == 0 ]]
 		then
 			rowPosition=$((RANDOM % 3 + 1))
