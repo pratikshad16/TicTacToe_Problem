@@ -177,6 +177,32 @@ function checkCenter()
 	fi
 }
 
+
+#when corners and center is not avalible
+function checkSides()
+{
+	if [[ block == 0 ]]
+	then
+		for (( row=1; row<=$ROW; row++ ))
+		do
+			for ((column=1; column<=$COLUMN; column++ ))
+			do
+				sum=$((row+column))
+				if [[ $sum == 3 || $sum == 5 ]]
+				then
+					if [[ ${board[$row,$column]} == "-" ]]
+					then
+						board[$row,$column]=$1
+						seeBoard
+						win=0
+						((count++))
+						block=1
+					fi
+				fi
+			done
+		done
+	fi
+}
 #checkwin before playing game
 function computerPlayToWin()
 {
@@ -234,6 +260,7 @@ do
 		row=$((ROW/2+1))
 		column=$((COLUMN/2+1))
 		checkCenter $currentPlayer $row $column
+		checkSides $currentPlayer
 		if [[ $block == 0 ]]
 		then
 			rowPosition=$((RANDOM % 3 + 1))
